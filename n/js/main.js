@@ -20,16 +20,16 @@
 
    cerrarSesion.addEventListener("click",EliminarUserBD);
 
-   
+
    var database = firebase.database();
 
    var conectados = null;
    var conectadokey="";
 
- 
+
 
 function ingresoGoogle () {
-   // body...  
+   // body...
 
    if (!firebase.auth().currentUser){
 
@@ -38,20 +38,22 @@ function ingresoGoogle () {
     provider.addScope('https://www.googleapis.com/auth/plus.login');
 
     firebase.auth().signInWithPopup(provider).then(function (result) {
-       /* body... */ 
+       /* body... */
 
        var token = result.credential.accessToken;
 
        var user = result.user;
 
+       var name =result.user.displayName;
 
+       console.log(user); //para poder ver los cambios
 
        $('#page').css("display", "none") && $('#page2').css("display", "block");
 
     InicializarFireChat();
 
     }).catch(function (error){
-       /* body... */ 
+       /* body... */
        var errorCode = error.code;
 
        var errorMessage=error.mesagge;
@@ -60,7 +62,7 @@ function ingresoGoogle () {
 
        var credential=error.credential;
 
-        
+
     });
    }else{
     firebase.auth().signOut();
@@ -68,7 +70,7 @@ function ingresoGoogle () {
 }
 
 function ingresoFacebook () {
-   // body...  
+   // body...
 
    if (!firebase.auth().currentUser){
 
@@ -77,7 +79,7 @@ function ingresoFacebook () {
     provider.addScope('public_profile');
 
     firebase.auth().signInWithPopup(provider).then(function (result) {
-       /* body... */ 
+       /* body... */
 
        var token = result.credential.accessToken;
 
@@ -87,9 +89,9 @@ function ingresoFacebook () {
 
        console.log(user);
 
-    
+
     }).catch(function (error){
-       /* body... */ 
+       /* body... */
        var errorCode = error.code;
 
        var errorMessage=error.mesagge;
@@ -115,21 +117,21 @@ function InicializarFireChat(){
 
 
     firebase.auth().onAuthStateChanged(function (user) {
-     /* body... */ 
+     /* body... */
 
      if (user){
         var userDisplayName = user.displayName;
         var userPhoto  =user.photoURL;
-        
+
         userName.textContent = userDisplayName;
-       
+
         if (userPhoto){
-          userPic.style.backgroundImage= 'url('+ userPhoto + ')'; 
+          userPic.style.backgroundImage= 'url('+ userPhoto + ')';
 
         }else{
           userPic.style.backgroundImage= 'url( ../images/profile_placeholder.png)';
         }
-        
+
 
 
         conectados = database.ref("/user");
@@ -137,7 +139,7 @@ function InicializarFireChat(){
         AgregarUserBD(user.uid,user.displayName);
 
         conectados.on('child_added',function (data) {
-           // body...  
+           // body...
            console.log("Ha Ingresado a la sala "+data.val().name);
            console.log("Ha Ingresado a la sala "+data.val().uid);
         });
@@ -145,7 +147,7 @@ function InicializarFireChat(){
         conectados.on('child_removed',function(data){
           console.log("Ha Salido de la sala "+data.val().name);
         });
-        
+
 
 
 
@@ -156,33 +158,25 @@ function InicializarFireChat(){
 }
 
 function AgregarUserBD (uid,name) {
-// body...  
+// body...
   var conectado= conectados.push({
     uid:uid,
     name:name
   });
 
- 
+
   conectadokey = conectado.key;
- 
+
  }
 
  function EliminarUserBD (argument) {
-    // body...  
+    // body...
 
     database.ref("/user/"+conectadokey).remove();
 
 
       $('#page2').css ("display", "none") && $('#page').css ("display", "block");
- 
+
 
 
  }
-
-
-  
-
-
-
-  
-
